@@ -1,0 +1,23 @@
+project: 'test'
+run_name: 'test-1'
+
+state:
+  deterministic: False
+  seed: 123
+  device: 'cuda'
+  verbose: False
+  debug: False
+
+hyperparams:
+  lr: 3e-5
+  batch_size: 32
+  grad_accumulation: 1
+  eval_frequency: 500
+  gradient_clip_val: 50.0
+  scheduler: 'linear'
+  warmup_steps: 100
+  total_steps: 1e5
+
+checkpoint:
+  dir: '../models'
+  save_top_k: 2

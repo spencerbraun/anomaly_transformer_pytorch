@@ -1,0 +1,2 @@
+model: 'classifier'
+loss: torch.nn.BCELoss

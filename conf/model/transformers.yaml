@@ -1,0 +1,4 @@
+transformers:
+  model: 'bert-base-uncased'
+  cache_dir: None
+  name: 'bert-base'
