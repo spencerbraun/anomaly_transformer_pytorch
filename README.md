@@ -1,6 +1,8 @@
 # Anomaly Transformer in PyTorch
 
-This is an implementation of [Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy](https://arxiv.org/abs/2110.02642). This paper is currently [under review](https://openreview.net/forum?id=LzQQ89U1qm_) and in need of some clarification around the attention mechanism. This repo will be updated as more information is provided.
+This is an implementation of [Anomaly Transformer: Time Series Anomaly Detection with Association Discrepancy](https://arxiv.org/abs/2110.02642). This paper has been accepted as a [Spotlight Paper at ICLR 2022](https://openreview.net/forum?id=LzQQ89U1qm_).
+
+Repository currently a work in progress.
 
 ## Usage
 
@@ -13,6 +15,8 @@ $ python -m venv env
 $ source env/bin/activate
 (env) $ pip install -r requirements.txt
 ```
+
+Written with python version `3.8.11`
 
 ### Data and Configuration
 

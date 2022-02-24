@@ -1,0 +1,7 @@
+hydra-core==1.1.1
+numpy==1.21.3
+omegaconf==2.1.1
+torch==1.10.0
+tqdm==4.62.3
+transformers==4.11.3
+wandb==0.12.10

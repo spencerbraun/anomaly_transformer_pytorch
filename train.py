@@ -47,9 +47,10 @@ def train(config, model, train_data, val_data):
         model.zero_grad()
         for step, batch in enumerate(tqdm(train_dataloader)):
 
-            outputs = model(**inputs)
-            loss = outputs.loss()
-            loss.backward()
+            outputs = model(batch)
+            min_loss = model.min_loss(batch)
+            max_loss = model.max_loss(batch)
+            (min_loss - max_loss).backward()
 
             torch.nn.utils.clip_grad_norm_(
                 model.parameters(), config.train.max_grad_norm
@@ -75,7 +76,20 @@ def train(config, model, train_data, val_data):
 
 
 def validate(config, model, data):
-    return 0
+
+    model.eval()
+    with torch.no_grad():
+        outputs = []
+        for batch in tqdm(data):
+            outputs.append(model(batch))
+        outputs = torch.cat(outputs)
+        outputs = outputs.cpu().numpy()
+        outputs = np.argmax(outputs, axis=1)
+        outputs = outputs.flatten()
+        labels = data.dataset.labels.cpu().numpy()
+        labels = labels.flatten()
+        f1 = f1_score(labels, outputs, average="macro")
+        return {"validation_f1": f1}
 
 
 @hydra.main(config_path="./conf", config_name="config")
