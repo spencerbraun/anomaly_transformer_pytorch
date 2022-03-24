@@ -38,11 +38,16 @@ class AnomalyAttention(nn.Module):
         self.V = self.Wv(x)
         self.sigma = self.Ws(x)
 
+    @staticmethod
+    def gaussian_kernel(mean, sigma):
+        normalize = 1 / (math.sqrt(2 * torch.pi) * sigma)
+        return normalize * torch.exp(-0.5 * (mean / sigma).pow(2))
+
     def prior_association(self):
         p = torch.from_numpy(
             np.abs(np.indices((self.N, self.N))[0] - np.indices((self.N, self.N))[1])
         )
-        gaussian = torch.normal(p.float(), self.sigma[:, 0].abs())
+        gaussian = self.gaussian_kernel(p.float(), self.sigma)
         gaussian /= gaussian.sum(dim=-1).view(-1, 1)
 
         return gaussian

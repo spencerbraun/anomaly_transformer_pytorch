@@ -40,7 +40,6 @@ def train(config, model, train_data, val_data):
     print("Warmup steps: {}".format(warmup_steps))
 
     num_steps = 0
-    best_f1 = 0
     model.train()
 
     for epoch in range(int(config.train.epochs)):
@@ -50,7 +49,8 @@ def train(config, model, train_data, val_data):
             outputs = model(batch)
             min_loss = model.min_loss(batch)
             max_loss = model.max_loss(batch)
-            (min_loss - max_loss).backward()
+            min_loss.backward(retain_graph=True)
+            max_loss.backward()
 
             torch.nn.utils.clip_grad_norm_(
                 model.parameters(), config.train.max_grad_norm
@@ -64,32 +64,9 @@ def train(config, model, train_data, val_data):
             if not config.debug:
                 wandb.log({"loss": loss.item()}, step=num_steps)
 
-        output = validate(config, model, val_data)
         if not config.debug:
             wandb.log(output, step=num_steps)
-
-            if output["validation_f1"] > best_f1:
-                print(f"Best validation F1! Saving to {config.train.pt}")
-                torch.save(model.state_dict(), config.train.pt)
-
-        best_f1 = max(best_f1, output["validation_f1"])
-
-
-def validate(config, model, data):
-
-    model.eval()
-    with torch.no_grad():
-        outputs = []
-        for batch in tqdm(data):
-            outputs.append(model(batch))
-        outputs = torch.cat(outputs)
-        outputs = outputs.cpu().numpy()
-        outputs = np.argmax(outputs, axis=1)
-        outputs = outputs.flatten()
-        labels = data.dataset.labels.cpu().numpy()
-        labels = labels.flatten()
-        f1 = f1_score(labels, outputs, average="macro")
-        return {"validation_f1": f1}
+            torch.save(model.state_dict(), config.train.pt)
 
 
 @hydra.main(config_path="./conf", config_name="config")
